@@ -20,7 +20,10 @@ const MAX_BYTES = 1024 * 1024;
 
 execFileSync('python3', [join(here, 'draw.py')], { stdio: 'inherit' });
 
-const src = join(here, 'entry.png');
+// draw.py writes entry.png to MAKEFUN_OUTPUT_DIR when set (the grader's
+// repo is read-only), else next to this file.
+const outDir = process.env.MAKEFUN_OUTPUT_DIR;
+const src = outDir ? join(outDir, 'entry.png') : join(here, 'entry.png');
 const head = readFileSync(src).subarray(0, 8);
 if (!head.equals(PNG_MAGIC)) {
   throw new Error('entry.png is not a PNG (bad magic bytes)');
@@ -31,4 +34,7 @@ if (size > MAX_BYTES) {
 }
 console.log(`entry.png OK: ${size} bytes, PNG magic verified`);
 
-copyFileSync(src, join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'));
+const dest = join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png');
+if (dest !== src) {
+  copyFileSync(src, dest);
+}
