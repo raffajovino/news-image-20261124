@@ -18,7 +18,11 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1024, 1024
-OUT = os.path.join(os.environ.get("MAKEFUN_OUTPUT_DIR") or os.path.dirname(os.path.abspath(__file__)), "entry.png")
+_outdir = os.environ.get("MAKEFUN_OUTPUT_DIR")
+if not _outdir:
+    _outdir = "/output" if os.path.isdir("/output") else os.path.dirname(os.path.abspath(__file__))
+os.makedirs(_outdir, exist_ok=True)
+OUT = os.path.join(_outdir, "entry.png")
 
 # --- palette (vintage paper, 70s feel) ---
 PAPER = (246, 241, 229)      # warm cream
